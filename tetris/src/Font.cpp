@@ -17,12 +17,12 @@ GLuint initFont() {
     // Shader compilation
     // VERTEX SHADER
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const GLchar *vertexSource = load_shader_source(std::string("c:/dev/tetris/tetris/src/Shaders/fontVertex.shader"))->c_str();
+    const GLchar *vertexSource = load_shader_source(std::string("src/shaders/fontVertex.shader"))->c_str();
     compile_shader(vertexShader, vertexSource);
 
     // FRAGMENT SHADER
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    const GLchar *fragmentSource = load_shader_source(std::string("c:/dev/tetris/tetris/src/Shaders/fontFragment.shader"))->c_str();
+    const GLchar *fragmentSource = load_shader_source(std::string("src/shaders/fontFragment.shader"))->c_str();
     compile_shader(fragmentShader, fragmentSource);
 
     // PROGRAM
@@ -37,7 +37,7 @@ GLuint initFont() {
     }
 
     FT_Face face;
-    if (FT_New_Face(ft, "c:/dev/tetris/tetris/src/fonts/bauh/bauhs93.ttf", 0, &face)) {
+    if (FT_New_Face(ft, "src/fonts/bauh/bauhs93.ttf", 0, &face)) {
         std::cout << "Failed to load font" << std::endl;
         return shaderProgram;
     }
