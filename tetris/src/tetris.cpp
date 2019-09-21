@@ -109,9 +109,10 @@ void InitGame() {
     compile_program(shaderProgram, vertexShader, fragmentShader);
 
     std::srand(std::time(nullptr));
-    int colorNumber = rand() % (sizeof(colors) / sizeof(colors[0]));
+    int colorNumber = rand() % (sizeof(colors) / sizeof(colors[0]) - 1) + 1;
     int figureNumber = rand() % (sizeof(figures) / sizeof(figures[0]));
     activate_figure(activeFigure.shape, figures[figureNumber]);
+    activeFigure.colorNumber = colorNumber;
     put_border_on_field();
 
     Timer timer;
@@ -156,11 +157,13 @@ void InitGame() {
                     activeFigure.posY = 0;
                     activeFigure.posX = 4;
 
-                    colorNumber = rand() % (sizeof(colors) / sizeof(colors[0]));
+                    colorNumber = rand() % (sizeof(colors) / sizeof(colors[0]) - 1) + 1;
                     figureNumber = rand() % (sizeof(figures) / sizeof(figures[0]));
                     activate_figure(activeFigure.shape, figures[figureNumber]);
+                    activeFigure.colorNumber = colorNumber;
 
                     deletedRows = delete_filled_rows(window, vao, ibo, shaderProgram);
+                    restore_field_state();
                     score += 10;
                 }
             }
@@ -182,9 +185,9 @@ void InitGame() {
             for (int row = 0; row < HEIGHT; row++) {
                 for (int col = 0; col < WIDTH; col++) {
                     if (get_block_at(field, row, col, WIDTH) == '0') {
-                        for (int ind : deletedRows) {
-                        }
-                            DrawQuad(vao, ibo, shaderProgram, QUAD_SIZE + col * QUAD_SIZE, (HEIGHT - row - 1) * QUAD_SIZE + QUAD_SIZE, glm::vec4(0.203, 0.596, 0.858, 1.0f));
+                        DrawQuad(vao, ibo, shaderProgram, QUAD_SIZE + col * QUAD_SIZE, (HEIGHT - row - 1) * QUAD_SIZE + QUAD_SIZE, colors[0]);
+                    } else if (get_block_at(field, row, col, WIDTH) > '0') {
+                        DrawQuad(vao, ibo, shaderProgram, QUAD_SIZE + col * QUAD_SIZE, (HEIGHT - row - 1) * QUAD_SIZE + QUAD_SIZE, colors[get_block_at(field, row, col, WIDTH) - '0']);
                     }
                 }
             }

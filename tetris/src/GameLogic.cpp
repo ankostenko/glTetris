@@ -13,6 +13,8 @@ bool running = true;
 struct ActiveFigure {
     char shape[9];
     int posX, posY;
+    int colorNumber;
+
 
     ActiveFigure(int x, int y)
         : posX(x), posY(y) {
@@ -46,6 +48,7 @@ const char *figures[] = {
 };
 
 glm::vec4 colors[] = {
+    glm::vec4(0.203, 0.596, 0.858, 1.0f), // Blue
     glm::vec4(0.752, 0.223, 0.168, 1.0f), // Red
     glm::vec4(0.945, 0.768, 0.058, 1.0f), // Yellow
     glm::vec4(0.607, 0.349, 0.713, 1.0f), // Violet
@@ -62,7 +65,7 @@ int score;
 bool isValidToRotate() {
     for (int row = 0; row < 3; row++) {
         for (int col = 0; col < 3; col++) {
-            if (get_block_at(field, activeFigure.posY + row, activeFigure.posX + col, WIDTH) == '0') {
+            if (get_block_at(field, activeFigure.posY + row, activeFigure.posX + col, WIDTH) >= '0') {
                 return false;
             }
         }
@@ -112,25 +115,6 @@ void put_border_on_field() {
     }
 }
 
-void clear_field() {
-    for (int row = 0; row < HEIGHT - 1; row++) {
-        for (int column = 1; column < WIDTH - 1; column++) {
-            if (get_block_at(field, row, column, WIDTH) != '0')
-                update_field(row, column, ' ');
-        }
-    }
-}
-
-
-void put_figure_on_screen(const char *figure, int row, int column) {
-    clear_field();
-    for (int row_i = 0; row_i < 3; row_i++) {
-        for (int column_i = 0; column_i < 3; column_i++) {
-            update_field(row + row_i, column + column_i, get_block_at(field, row_i, column_i, WIDTH));
-        }
-    }
-}
-
 void save_field_state(int row_to_limit, int col_to_limit) {
     for (int row = 0; row < row_to_limit; row++) {
         for (int col = 0; col < col_to_limit; col++) {
@@ -153,7 +137,7 @@ void put_stone_blocks() {
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
             if (get_block_at(activeFigure.shape, row, column, 3) == 'X') {
-                get_block_at(field, activeFigure.posY + row, activeFigure.posX + column, WIDTH) = '0';
+                get_block_at(field, activeFigure.posY + row, activeFigure.posX + column, WIDTH) = '0' + activeFigure.colorNumber;
             }
         }
     }
@@ -172,7 +156,7 @@ bool doesCollide(Side side) {
             for (int row = 0; row < 3; row++) {
                 for (int column = 0; column < 3; column++) {
                     if (get_block_at(activeFigure.shape, row, column, 3) == 'X') {
-                        if (get_block_at(field, activeFigure.posY + row, activeFigure.posX + column - 1, WIDTH) == '0') {
+                        if (get_block_at(field, activeFigure.posY + row, activeFigure.posX + column - 1, WIDTH) >= '0') {
                             return true;
                         }
                     }
@@ -183,7 +167,7 @@ bool doesCollide(Side side) {
             for (int row = 0, column = 2; row < 3; row++) {
                 for (int column = 0; column < 3; column++) {
                     if (activeFigure.shape[row * 3 + column] == 'X') {
-                        if (get_block_at(field, activeFigure.posY + row, activeFigure.posX + column + 1, WIDTH) == '0') {
+                        if (get_block_at(field, activeFigure.posY + row, activeFigure.posX + column + 1, WIDTH) >= '0') {
                             return true;
                         }
                     }
@@ -195,7 +179,7 @@ bool doesCollide(Side side) {
                 for (int column = 0; column < 3; column++) {
                     if (activeFigure.shape[row * 3 + column] == 'X') {
                         // Field is decreased by 1
-                        if (get_block_at(field, activeFigure.posY + row + 1, activeFigure.posX + column, WIDTH) == '0') {
+                        if (get_block_at(field, activeFigure.posY + row + 1, activeFigure.posX + column, WIDTH) >= '0') {
                             return true;
                         }
                     }
@@ -210,7 +194,7 @@ bool doesCollide(Side side) {
 bool check_row_deletion(int row) {
     int row_sum = 0;
     for (int col = 1; col < WIDTH - 1; col++) {
-        if (get_block_at(field, row, col, WIDTH) == '0') {
+        if (get_block_at(field, row, col, WIDTH) > '0') {
             row_sum++;
         }
     }
